@@ -20,24 +20,33 @@ async function getArticle(slug: string) {
       if (res.status === 404) {
         return null;
       }
-      throw new Error('Failed to fetch article');
+      throw new Error(`Failed to fetch article: ${res.status}`);
     }
 
     const data = await res.json();
     return data.article;
   } catch (error) {
     console.error('Error fetching article:', error);
-    throw error;
+    return null;
   }
 }
 
-// Helper function to check if a value is a non-null object
+// Helper to check if a value is an object
 const isObject = (value: any): boolean => {
-  return value !== null && typeof value === 'object';
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 };
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await getArticle(params.slug);
+// Use the correct parameter type for Next.js 15 pages
+interface PageProps {
+  params: {
+    slug: string;
+  };
+  searchParams: Record<string, string | string[] | undefined>;
+}
+
+export default async function ArticlePage({ params, searchParams }: PageProps) {
+  const { slug } = params;
+  const article = await getArticle(slug);
   
   if (!article) {
     notFound();

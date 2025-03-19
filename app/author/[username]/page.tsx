@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import ArticleCard from '@/components/ArticleCard/ArticleCard';
+import ArticleCard from '@/components/ArticleCard';
 import { Article, User } from '@/types';
 
 async function fetchAuthorProfile(username: string) {

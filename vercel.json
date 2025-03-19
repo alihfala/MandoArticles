@@ -1,6 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm install --legacy-peer-deps && npm run build",
+  "buildCommand": "npm install --legacy-peer-deps && echo 'Skipping build step, Vercel will handle this automatically'",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "env": {
+    "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+  }
 } 

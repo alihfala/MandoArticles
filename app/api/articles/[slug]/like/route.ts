@@ -1,19 +1,17 @@
 import { NextResponse } from 'next/server';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/lib/prisma';
 
-type Params = {
-  params: {
-    slug: string;
-  };
-};
-
-export async function POST(
-  req: Request,
-  { params }: Params
-) {
+// Simple POST handler without complex parameters
+export async function POST(request: Request) {
   try {
+    // Get the slug from the URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const slug = pathParts[pathParts.indexOf('articles') + 1];
+    
+    // Get session
     const session = await getServerSession(authOptions);
     
     // Check if user is authenticated
@@ -25,7 +23,6 @@ export async function POST(
     }
 
     const userId = session.user.id;
-    const { slug } = params;
     
     if (!slug) {
       return NextResponse.json(

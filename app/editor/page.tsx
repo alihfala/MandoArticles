@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import ImageWithFallback from '@/components/ImageWithFallback';
+import ImageWithFallback from '../../components/ImageWithFallback/ImageWithFallback';
 
 type Block = {
   id: string;

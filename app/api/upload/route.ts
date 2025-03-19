@@ -1,6 +1,6 @@
 // app/api/upload/route.ts
 import { NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 import { imagekit } from "@/lib/imagekit";
 
 // Check if mock mode is enabled

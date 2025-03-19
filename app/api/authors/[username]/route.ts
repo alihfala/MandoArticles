@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { username: string } }
-) {
+export async function GET(request: Request) {
   try {
-    // Make sure params is awaited properly
-    const username = params?.username;
+    // Extract username from URL path
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const usernameIndex = pathParts.indexOf('authors') + 1;
+    const username = pathParts[usernameIndex];
     
     if (!username) {
       return NextResponse.json(

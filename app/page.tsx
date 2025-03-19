@@ -1,6 +1,7 @@
 // app/page.tsx
 
-import ArticleCard from '@/components/ArticleCard/ArticleCard';
+import React from 'react';
+import ArticleCard from '@/components/ArticleCard';
 import { Article } from '@/types';
 import Link from 'next/link';
 import Image from 'next/image';

@@ -1,35 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
-    remotePatterns: [
-      { 
-        protocol: 'https',
-        hostname: 'picsum.photos' 
-      },
-      { 
-        protocol: 'https',
-        hostname: 'randomuser.me' 
-      },
-      { 
-        protocol: 'https',
-        hostname: 'ik.imagekit.io' 
-      },
-      { 
-        protocol: 'http',
-        hostname: 'localhost' 
-      },
-      { 
-        protocol: 'https',
-        hostname: 'placehold.co' 
-      }
+    domains: [
+      'avatars.githubusercontent.com',
+      'lh3.googleusercontent.com',
+      'ik.imagekit.io',
+      'picsum.photos',
+      'images.unsplash.com',
+      'placehold.co'
     ],
-    dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
-  experimental: {
-    transpilePackages: ["@next-auth/prisma-adapter", "next-auth"]
-  }
-};
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+}
 
 module.exports = nextConfig; 

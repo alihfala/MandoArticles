@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-type Params = { params: { slug: string } };
-
-export async function GET(
-  req: Request,
-  { params }: Params
-) {
+// Simple GET handler without complex parameters
+export async function GET(request: Request) {
   try {
-    const slug = params?.slug;
+    // Get the slug from the URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const slug = pathParts[pathParts.indexOf('articles') + 1];
     
     if (!slug) {
       return NextResponse.json(
