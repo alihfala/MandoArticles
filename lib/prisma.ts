@@ -16,27 +16,20 @@ const createPrismaClient = () => {
     ? ['error'] 
     : ['query', 'error', 'warn'];
 
-  // Get database URL from environment
-  const databaseUrl = process.env.DATABASE_URL;
-
-  // If no DATABASE_URL is found, log an error but don't crash
-  if (!databaseUrl) {
-    console.error('⚠️ DATABASE_URL environment variable is not set');
-  } else {
-    console.log(`✅ DATABASE_URL is set. First 10 chars: ${databaseUrl.substring(0, 10)}...`);
-  }
-
-  // Create client with compatible options
-  const prismaOptions: Prisma.PrismaClientOptions = {
+  // Configure connection options for better performance in serverless environments
+  const clientOptions = {
     log: logOptions,
-    datasources: {
-      db: {
-        url: databaseUrl,
+    // In production, use shorter connection timeouts for serverless functions
+    ...(process.env.NODE_ENV === 'production' && {
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
       },
-    },
+    }),
   };
 
-  return new PrismaClient(prismaOptions);
+  return new PrismaClient(clientOptions);
 };
 
 // Initialize PrismaClient
@@ -56,8 +49,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Additional debugging for Vercel environments
 if (process.env.VERCEL && typeof window === 'undefined') {
-  console.log('🚀 Running on Vercel - Prisma Client initialized');
-  console.log(`🌎 Environment: ${process.env.NODE_ENV}`);
+  console.log('Running on Vercel - Prisma Client initialized');
   
   // Simple verification of database connectivity 
   if (process.env.NODE_ENV === 'production') {
