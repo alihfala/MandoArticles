@@ -1,16 +1,29 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import Providers from './providers';
 import Navbar from '@/components/Navbar/Navbar';
+import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({ subsets: ['latin'] });
-
+// Metadata for SEO
 export const metadata: Metadata = {
-  title: 'Mango Articles',
-  description: 'A modern platform for writing and sharing articles',
+  title: {
+    default: 'Mando Articles - Modern Publishing Platform',
+    template: '%s | Mando Articles'
+  },
+  description: 'A modern publishing platform for writers and readers.',
+  keywords: ['articles', 'blog', 'publishing', 'writing', 'content'],
+  authors: [{ name: 'Mando Articles Team' }],
+  creator: 'Mando Articles',
+  openGraph: {
+    type: 'website',
+    siteName: 'Mando Articles',
+    title: 'Mando Articles - Modern Publishing Platform',
+    description: 'A modern publishing platform for writers and readers.',
+  },
 };
 
+// App layout
 export default function RootLayout({
   children,
 }: {
@@ -18,12 +31,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Providers>
-          <Navbar />
-          <main className="pt-20">
-            {children}
-          </main>
+          <Suspense fallback={<div className="h-16 bg-white shadow"></div>}>
+            <Navbar />
+          </Suspense>
+          <main>{children}</main>
+          <Toaster position="bottom-right" />
         </Providers>
       </body>
     </html>

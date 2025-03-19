@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider } from 'next-auth/react';
 
@@ -10,7 +10,7 @@ export default function Providers({
   children: React.ReactNode 
 }) {
   // Create a client instance in the user's browser
-  const [client] = useState(() => new QueryClient({
+  const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000, // 1 minute
@@ -21,21 +21,25 @@ export default function Providers({
   }));
 
   // Check if we're in the browser environment to safely use SessionProvider
-  const [isMounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
-  // Only render providers after component mounts in the client
   useEffect(() => {
-    setIsMounted(true);
+    setMounted(true);
   }, []);
-  
-  if (!isMounted) {
-    // Return just the children without SessionProvider during SSR
-    return <>{children}</>;
+
+  // This ensures hydration matching by waiting until client-side to render children
+  if (!mounted) {
+    // Return a minimal placeholder that doesn't use any client hooks
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
-      <QueryClientProvider client={client}>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>
     </SessionProvider>

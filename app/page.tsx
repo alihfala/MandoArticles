@@ -7,6 +7,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 
+// Add dynamic metadata
+export const dynamic = 'force-dynamic';
+
 // This function isn't used in the current implementation
 // async function fetchArticles({ pageParam = 0 }) {
 //   const response = await fetch(`/api/articles?page=${pageParam}`);
@@ -18,16 +21,14 @@ import { formatDistanceToNow } from 'date-fns';
 
 async function getArticles() {
   try {
-    // For Server Components in Next.js, we need to provide a full URL
-    // or use a special format for relative URLs
-    
-    // Using URL constructor to create a valid URL
+    // For Server Components in Next.js, we need to provide a full URL for API routes
     const baseUrl = process.env.VERCEL_URL || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const url = new URL('/api/articles', `${protocol}://${baseUrl}`);
     
-    const res = await fetch(url, {
-      cache: 'no-store',
+    // Use incremental static regeneration with a short revalidation period
+    const res = await fetch(url.toString(), {
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
     });
     
     if (!res.ok) {
@@ -51,7 +52,7 @@ export default async function Home() {
       <section className="mb-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Welcome to Mango Articles
+            Welcome to Mando Articles
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Discover insightful articles and share your knowledge with the world
@@ -76,7 +77,7 @@ export default async function Home() {
                         />
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
-                          <span className="text-indigo-500 font-semibold">Mango Articles</span>
+                          <span className="text-indigo-500 font-semibold">Mando Articles</span>
                         </div>
                       )}
                     </Link>
@@ -154,7 +155,7 @@ export default async function Home() {
                         />
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
-                          <span className="text-indigo-500 font-semibold">Mango Articles</span>
+                          <span className="text-indigo-500 font-semibold">Mando Articles</span>
                         </div>
                       )}
                     </Link>

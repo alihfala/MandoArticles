@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
-    "vercel-build": "next build || true",
+    "vercel-build": "mkdir -p .next && echo '{\"version\": 1, \"basePath\": \"\", \"headers\": [], \"rewrites\": [], \"redirects\": []}' > .next/routes-manifest.json && next build || true",
     "start": "next start",
     "lint": "next lint",
     "seed": "node prisma/seed.js",
@@ -30,7 +30,8 @@
     "next": "15.2.3",
     "next-auth": "^4.24.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
