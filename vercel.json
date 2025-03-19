@@ -1,13 +1,14 @@
 {
   "version": 2,
-  "buildCommand": "npm install --legacy-peer-deps && npm run vercel-build",
+  "buildCommand": "npx prisma generate && node -e \"console.log('✅ Prisma Client generated')\" && npm run vercel-build",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
   "env": {
     "NEXT_SHARP_PATH": "./node_modules/sharp",
     "VERCEL_FORCE_NO_BUILD_CACHE": "1",
     "NEXT_DISABLE_SOURCEMAPS": "1",
-    "NEXT_TELEMETRY_DISABLED": "1"
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "NODE_ENV": "production"
   },
   "builds": [
     {

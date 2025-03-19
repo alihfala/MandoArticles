@@ -18,6 +18,17 @@ declare module "next-auth" {
   }
 }
 
+// Verify the database connection is available
+const isPrismaConnected = async () => {
+  try {
+    await prisma.$queryRaw`SELECT 1+1 AS result`;
+    return true;
+  } catch (e) {
+    console.error("Database connection error:", e);
+    return false;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -27,16 +38,25 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        // Make sure we have proper credentials
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
+        // Verify database connection
+        const isConnected = await isPrismaConnected();
+        if (!isConnected) {
+          throw new Error("Database connection failed");
+        }
+
+        // Find the user by email
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
         
         if (!user) return null;
         
+        // Verify password
         const passwordMatch = await compare(credentials.password, user.password);
         
         if (passwordMatch) {
@@ -71,8 +91,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.username = user.username;
-        token.isGuest = user.isGuest || false;
+        token.username = user.username as string;
+        token.isGuest = user.isGuest as boolean || false;
       }
       return token;
     },
@@ -80,7 +100,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
-        session.user.isGuest = token.isGuest || false;
+        session.user.isGuest = token.isGuest as boolean || false;
       }
       return session;
     }

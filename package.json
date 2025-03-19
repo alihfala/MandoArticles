@@ -5,14 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "vercel-build": "mkdir -p .next && echo '{\"version\": 1, \"basePath\": \"\", \"headers\": [], \"rewrites\": [], \"redirects\": []}' > .next/routes-manifest.json && next build || true",
+    "vercel-build": "next build",
     "start": "next start",
     "lint": "next lint",
     "seed": "node prisma/seed.js",
     "db:reset": "prisma migrate reset --force",
     "seed:users": "node scripts/seed-users.js",
     "seed:articles": "node scripts/seed-articles.js",
-    "test:imagekit": "node scripts/test-imagekit.js"
+    "test:imagekit": "node scripts/test-imagekit.js",
+    "test:db": "node scripts/test-db.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

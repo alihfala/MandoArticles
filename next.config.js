@@ -25,9 +25,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Fix useSearchParams and other client hooks in server components
+  // Use the correct property name for Next.js 15
+  serverExternalPackages: ['next-auth', '@next-auth/prisma-adapter', 'bcryptjs'],
+  // Adjust experimental features compatible with Next.js 15
   experimental: {
-    serverComponentsExternalPackages: ['next-auth', '@next-auth/prisma-adapter'],
     missingSuspenseWithCSRBailout: false,
   },
   // Disable module scope checking for improved compatibility
