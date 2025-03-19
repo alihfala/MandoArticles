@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
-    "vercel-build": "mkdir -p .next && echo '{\"version\": 1, \"basePath\": \"\", \"headers\": [], \"rewrites\": [], \"redirects\": []}' > .next/routes-manifest.json && next build || true",
+    "vercel-build": "next build || true",
     "start": "next start",
     "lint": "next lint",
     "seed": "node prisma/seed.js",
@@ -27,23 +27,23 @@
     "dotenv": "^16.3.1",
     "imagekit": "^6.0.0",
     "imagekit-javascript": "^3.0.2",
-    "next": "14.1.0",
+    "next": "15.2.3",
     "next-auth": "^4.24.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "prisma": "^6.5.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "overrides": {
     "next-auth": {
-      "next": "14.1.0"
+      "next": "15.2.3"
     }
   }
 }
