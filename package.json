@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "vercel-build": "next build",
+    "vercel-build": "node scripts/prisma-vercel.js && next build",
     "start": "next start",
     "lint": "next lint",
     "seed": "node prisma/seed.js",
@@ -13,7 +13,10 @@
     "seed:users": "node scripts/seed-users.js",
     "seed:articles": "node scripts/seed-articles.js",
     "test:imagekit": "node scripts/test-imagekit.js",
-    "test:db": "node scripts/test-db.js"
+    "test:db": "node scripts/test-db.js",
+    "prisma:generate": "prisma generate",
+    "prisma:vercel": "node scripts/prisma-vercel.js",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

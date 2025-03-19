@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npx prisma generate && node -e \"console.log('✅ Prisma Client generated')\" && npm run vercel-build",
+  "buildCommand": "npm run vercel-build",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
   "env": {
@@ -8,7 +8,8 @@
     "VERCEL_FORCE_NO_BUILD_CACHE": "1",
     "NEXT_DISABLE_SOURCEMAPS": "1",
     "NEXT_TELEMETRY_DISABLED": "1",
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "PRISMA_CLIENT_ENGINE_TYPE": "binary"
   },
   "builds": [
     {
