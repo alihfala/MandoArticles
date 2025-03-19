@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth/next';
 import prisma from '@/lib/prisma';
 
 type Params = {
@@ -13,7 +14,7 @@ export async function POST(
   { params }: Params
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     
     // Check if user is authenticated
     if (!session || !session.user) {

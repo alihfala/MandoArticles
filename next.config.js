@@ -26,6 +26,9 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
+  },
+  experimental: {
+    transpilePackages: ["@next-auth/prisma-adapter", "next-auth"]
   }
 };
 
