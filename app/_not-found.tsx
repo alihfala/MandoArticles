@@ -11,6 +11,21 @@ export default function NotFoundFallback() {
           <p className="mt-2 text-base text-gray-600">
             The page you are looking for doesn't exist or has been moved.
           </p>
+          <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+            <a 
+              href="/"
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+            >
+              Return Home
+            </a>
+            <a 
+              href="/api/debug-db"
+              target="_blank"
+              className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+            >
+              Check System Status
+            </a>
+          </div>
         </div>
       </div>
     </div>

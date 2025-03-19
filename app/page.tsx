@@ -29,6 +29,9 @@ async function getArticles() {
     // Use incremental static regeneration with a short revalidation period
     const res = await fetch(url.toString(), {
       next: { revalidate: 60 }, // Revalidate every 60 seconds
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
     });
     
     if (!res.ok) {
@@ -36,19 +39,25 @@ async function getArticles() {
     }
 
     const data = await res.json();
-    return data.articles || [];
+    return {
+      articles: data.articles || [],
+      error: null
+    };
   } catch (error) {
     console.error('Error fetching articles:', error);
-    return [];
+    return {
+      articles: [],
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
   }
 }
 
 // This can remain async as a Server Component
 export default async function Home() {
-  const articles = await getArticles();
+  const { articles, error } = await getArticles();
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-12">
       <section className="mb-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
@@ -58,6 +67,31 @@ export default async function Home() {
             Discover insightful articles and share your knowledge with the world
           </p>
         </div>
+        
+        {/* Show error message if fetching articles failed */}
+        {error && (
+          <div className="my-8 p-4 bg-red-50 border border-red-200 rounded-md">
+            <h3 className="text-lg font-semibold text-red-700 mb-2">Error Loading Articles</h3>
+            <p className="text-red-600">{error}</p>
+            <div className="mt-4">
+              <p className="text-gray-700">This may be due to one of the following reasons:</p>
+              <ul className="list-disc ml-6 mt-2 text-gray-700">
+                <li>Database connection issue</li>
+                <li>Server is temporarily unavailable</li>
+                <li>Network connectivity problems</li>
+              </ul>
+              <div className="mt-4">
+                <Link 
+                  href="/api/debug-db" 
+                  target="_blank"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Check Database Status
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Featured Articles - First 3 articles */}
         {articles.length > 0 && (
@@ -209,7 +243,7 @@ export default async function Home() {
         )}
         
         {/* Empty state */}
-        {articles.length === 0 && (
+        {!error && articles.length === 0 && (
           <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"

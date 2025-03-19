@@ -1,15 +1,36 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { Article } from '@/types';
 
+/**
+ * GET handler for articles API
+ * This endpoint returns a paginated list of published articles
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '0');
     const limit = parseInt(searchParams.get('limit') || '6');
     const authorId = searchParams.get('authorId');
+    
+    // Check database connection first
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+    } catch (connError) {
+      console.error('Database connection error:', connError);
+      return NextResponse.json(
+        { 
+          error: 'Database connection error', 
+          message: 'Unable to connect to the database. Please try again later.',
+          details: connError instanceof Error ? connError.message : 'Unknown error',
+          status: 'error',
+          timestamp: new Date().toISOString()
+        },
+        { status: 503 }
+      );
+    }
     
     // Build query filters
     const where = {
@@ -57,11 +78,29 @@ export async function GET(request: Request) {
     return NextResponse.json({
       articles: transformedArticles,
       nextPage: articles.length === limit ? page + 1 : null,
+      status: 'success',
+      timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching articles:', error);
+    
+    // Determine if it's a Prisma error
+    const isPrismaError = 
+      error instanceof Error &&
+      (error instanceof Prisma.PrismaClientKnownRequestError || 
+      error instanceof Prisma.PrismaClientUnknownRequestError || 
+      error instanceof Prisma.PrismaClientRustPanicError || 
+      error instanceof Prisma.PrismaClientInitializationError ||
+      error instanceof Prisma.PrismaClientValidationError);
+    
     return NextResponse.json(
-      { error: 'Failed to fetch articles' },
+      { 
+        error: 'Failed to fetch articles', 
+        message: isPrismaError ? 'Database error occurred' : 'Server error occurred',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        status: 'error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }
@@ -127,7 +166,7 @@ export async function POST(request: Request) {
 
       try {
         // Update the article
-        const updatedArticle = await prisma.$transaction(async (tx: PrismaClient) => {
+        const updatedArticle = await prisma.$transaction(async (tx) => {
           // First delete existing blocks
           await tx.block.deleteMany({
             where: { articleId: id }
@@ -182,10 +221,26 @@ export async function POST(request: Request) {
           article: transformedArticle,
           message: published ? 'Article published successfully' : 'Draft updated successfully'
         });
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Error in transaction:', err);
+        
+        // Determine if it's a Prisma error
+        const isPrismaError = 
+          err instanceof Error &&
+          (err instanceof Prisma.PrismaClientKnownRequestError || 
+          err instanceof Prisma.PrismaClientUnknownRequestError || 
+          err instanceof Prisma.PrismaClientRustPanicError || 
+          err instanceof Prisma.PrismaClientInitializationError ||
+          err instanceof Prisma.PrismaClientValidationError);
+        
         return NextResponse.json(
-          { error: 'Failed to update article', details: err instanceof Error ? err.message : 'Unknown error' },
+          { 
+            error: 'Failed to update article', 
+            message: isPrismaError ? 'Database error occurred' : 'Server error occurred',
+            details: err instanceof Error ? err.message : 'Unknown error',
+            status: 'error',
+            timestamp: new Date().toISOString()
+          },
           { status: 500 }
         );
       }
@@ -252,17 +307,49 @@ export async function POST(request: Request) {
         article: transformedArticle,
         message: published ? 'Article published successfully' : 'Draft saved successfully'
       });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error creating article:', err);
+      
+      // Determine if it's a Prisma error
+      const isPrismaError = 
+        err instanceof Error &&
+        (err instanceof Prisma.PrismaClientKnownRequestError || 
+        err instanceof Prisma.PrismaClientUnknownRequestError || 
+        err instanceof Prisma.PrismaClientRustPanicError || 
+        err instanceof Prisma.PrismaClientInitializationError ||
+        err instanceof Prisma.PrismaClientValidationError);
+      
       return NextResponse.json(
-        { error: 'Failed to create article', details: err instanceof Error ? err.message : 'Unknown error' },
+        { 
+          error: 'Failed to create article', 
+          message: isPrismaError ? 'Database error occurred' : 'Server error occurred',
+          details: err instanceof Error ? err.message : 'Unknown error',
+          status: 'error',
+          timestamp: new Date().toISOString()
+        },
         { status: 500 }
       );
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in POST handler:', error);
+    
+    // Determine if it's a Prisma error
+    const isPrismaError = 
+      error instanceof Error &&
+      (error instanceof Prisma.PrismaClientKnownRequestError || 
+      error instanceof Prisma.PrismaClientUnknownRequestError || 
+      error instanceof Prisma.PrismaClientRustPanicError || 
+      error instanceof Prisma.PrismaClientInitializationError ||
+      error instanceof Prisma.PrismaClientValidationError);
+    
     return NextResponse.json(
-      { error: 'Failed to save article', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Failed to save article', 
+        message: isPrismaError ? 'Database error occurred' : 'Server error occurred',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        status: 'error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }
