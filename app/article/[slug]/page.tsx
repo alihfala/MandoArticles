@@ -342,7 +342,7 @@ export default function ArticlePage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-screen-xl">
+    <main className="container mx-auto px-4 py-8 max-w-screen-xl mt-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Main content - article */}
         <article className="lg:col-span-8 bg-white rounded-lg shadow-md overflow-hidden">

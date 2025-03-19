@@ -122,7 +122,7 @@ export default function AuthorProfilePage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-screen-xl">
+    <main className="container mx-auto px-4 py-8 max-w-screen-xl mt-12">
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-40 w-full"></div>
         

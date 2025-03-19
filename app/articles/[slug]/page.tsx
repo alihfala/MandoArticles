@@ -185,7 +185,7 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-12">
       <article className="max-w-4xl mx-auto bg-white rounded-lg overflow-hidden shadow-sm">
         {article.coverImage && (
           <div className="relative h-64 md:h-96 w-full">
