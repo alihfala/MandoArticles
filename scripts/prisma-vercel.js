@@ -4,6 +4,29 @@ const fs = require('fs');
 
 console.log('🔄 Running Prisma Vercel setup...');
 
+// Try to verify database connection first
+try {
+  console.log('🔍 Checking database connection...');
+  const { verifyDatabaseConnection } = require('./verify-db-connection');
+  
+  // Only perform a quick check, not exit on failure
+  verifyDatabaseConnection()
+    .then(success => {
+      if (success) {
+        console.log('✅ Database connection is working!');
+      } else {
+        console.warn('⚠️ Database connection check failed. Continuing with build anyway...');
+      }
+    })
+    .catch(error => {
+      console.warn('⚠️ Database connection verification error:', error.message);
+      console.log('Continuing with build anyway...');
+    });
+} catch (error) {
+  console.warn('⚠️ Could not verify database connection:', error.message);
+  console.log('Continuing with build anyway...');
+}
+
 // Get the prisma schema path
 const prismaSchemaPath = path.join(process.cwd(), 'prisma', 'schema.prisma');
 
