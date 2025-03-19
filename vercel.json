@@ -4,6 +4,25 @@
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
   "env": {
-    "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+    "VERCEL_FORCE_NO_BUILD_CACHE": "1",
+    "NODE_ENV": "production",
+    "NEXT_DISABLE_SOURCEMAPS": "1",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "routes": [
+    { "src": "/_not-found", "dest": "/404" },
+    { "src": "/((?!api).*)", "dest": "/$1" }
+  ],
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
+  "functions": {
+    "app/api/**/*": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
   }
 } 

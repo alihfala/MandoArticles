@@ -17,6 +17,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Tell Next.js to generate specific pages only on-demand (not prerendered)
+  unstable_staticGeneration: {
+    // Don't prerender any pages that need session/auth
+    noStaticImports: true,
+    disableStaticGeneration: true,
+  },
   async rewrites() {
     return {
       beforeFiles: [
