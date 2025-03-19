@@ -1,0 +1,10 @@
+{
+  "pages": {
+    "/api/auth/[...nextauth]/route": [
+      "static/chunks/webpack-b8929893121c31bf.js",
+      "static/chunks/c7879cf7-fb566094d0a216de.js",
+      "static/chunks/main-app-9c5de8671191584f.js",
+      "static/chunks/app/api/auth/[...nextauth]/route-4d582059c56ff15b.js"
+    ]
+  }
+}

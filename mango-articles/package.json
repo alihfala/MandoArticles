@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "node prisma/seed.js",
+    "db:reset": "prisma migrate reset --force",
+    "seed:users": "node scripts/seed-users.js",
+    "seed:articles": "node scripts/seed-articles.js",
+    "test:imagekit": "node scripts/test-imagekit.js"
+  }
+} 
