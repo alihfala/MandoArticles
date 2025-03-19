@@ -8,7 +8,8 @@ const nextConfig = {
       'ik.imagekit.io',
       'picsum.photos',
       'images.unsplash.com',
-      'placehold.co'
+      'placehold.co',
+      'randomuser.me'
     ],
     remotePatterns: [
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
@@ -16,7 +17,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'ik.imagekit.io' },
       { protocol: 'https', hostname: 'picsum.photos' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'placehold.co' }
+      { protocol: 'https', hostname: 'placehold.co' },
+      { protocol: 'https', hostname: 'randomuser.me' }
     ],
   },
   typescript: {

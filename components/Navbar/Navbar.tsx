@@ -6,11 +6,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
+// Helper function to check if URL is valid
+function isValidURL(url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const pathname = usePathname();
 
   const isAuthPage = pathname?.includes('/auth/');
@@ -28,6 +40,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Reset image error state when session changes
+  useEffect(() => {
+    setImgError(false);
+  }, [session]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -38,6 +55,22 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
+  };
+  
+  // Get a fallback profile image from a reliable source
+  const getFallbackImage = () => {
+    // Using a reliable image placeholder service
+    return "https://placehold.co/32x32/indigo/white?text=" + 
+      (session?.user?.name?.charAt(0)?.toUpperCase() || 'U');
+  };
+  
+  // Get user avatar with fallback
+  const getUserAvatar = () => {
+    // If there was an error loading the image or no valid URL
+    if (imgError || !isValidURL(session?.user?.image)) {
+      return getFallbackImage();
+    }
+    return session?.user?.image || getFallbackImage();
   };
   
   // Hide navbar on auth pages - moved this after all hooks are called
@@ -79,18 +112,20 @@ export default function Navbar() {
                 className="flex items-center space-x-1 focus:outline-none"
               >
                 <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-200">
-                  {session.user.image ? (
+                  {isValidURL(session.user.image) && !imgError ? (
                     <Image
-                      src={session.user.image}
+                      src={getUserAvatar()}
                       alt={session.user.name || 'User'}
                       width={32}
                       height={32}
                       className="object-cover"
+                      onError={() => setImgError(true)}
+                      unoptimized={session.user.image?.includes('randomuser.me')}
                     />
                   ) : (
                     <div className="h-full w-full bg-indigo-100 flex items-center justify-center">
                       <span className="text-xs text-indigo-500 font-bold">
-                        {session.user.name?.charAt(0) || 'U'}
+                        {session.user.name?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     </div>
                   )}
