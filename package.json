@@ -15,6 +15,7 @@
     "test:imagekit": "node scripts/test-imagekit.js",
     "test:db": "node scripts/test-db.js",
     "verify:db": "node scripts/verify-db-connection.js",
+    "deploy:vercel": "node scripts/deploy-vercel.js",
     "prisma:generate": "prisma generate",
     "prisma:vercel": "node scripts/prisma-vercel.js",
     "postinstall": "prisma generate"

@@ -16,6 +16,23 @@ function maskDatabaseUrl(url: string | undefined): string {
   }
 }
 
+// Check if an IP is local/private
+function isLocalOrPrivateIP(ip: string): boolean {
+  if (ip === 'localhost' || ip === '127.0.0.1') return true;
+  
+  // Check common private IP ranges
+  return (
+    ip.startsWith('10.') ||
+    ip.startsWith('192.168.') ||
+    (ip.startsWith('172.') && 
+      (() => {
+        const secondOctet = parseInt(ip.split('.')[1]);
+        return secondOctet >= 16 && secondOctet <= 31;
+      })()
+    )
+  );
+}
+
 // A diagnostic API endpoint to check database connectivity
 export async function GET() {
   try {
@@ -26,6 +43,28 @@ export async function GET() {
     const directUrl = process.env.DIRECT_URL;
     const maskedDbUrl = maskDatabaseUrl(dbUrl);
     const maskedDirectUrl = directUrl ? maskDatabaseUrl(directUrl) : 'Not set';
+    
+    // Parse host information
+    let hostInfo = {};
+    let isLocalhost = false;
+    
+    try {
+      const parsedUrl = new URL(dbUrl);
+      const hostname = parsedUrl.hostname;
+      isLocalhost = isLocalOrPrivateIP(hostname);
+      
+      hostInfo = {
+        hostname,
+        port: parsedUrl.port,
+        database: parsedUrl.pathname.substring(1),
+        isLocalOrPrivate: isLocalhost,
+        warning: isLocalhost ? 
+          'Using localhost or a private IP will not work from Vercel. Use a public IP or hosted database instead.' : 
+          undefined
+      };
+    } catch (e) {
+      hostInfo = { error: 'Could not parse database URL' };
+    }
     
     // Connection test with timeout
     const connectionTestPromise = prisma.$queryRaw`SELECT 1+1 AS result`;
@@ -70,9 +109,7 @@ export async function GET() {
         connection: {
           url: maskedDbUrl,
           directUrl: maskedDirectUrl,
-          host: new URL(dbUrl).hostname,
-          port: new URL(dbUrl).port,
-          database: new URL(dbUrl).pathname.substring(1)
+          ...hostInfo
         },
         version: dbVersion,
         stats: {
@@ -87,27 +124,66 @@ export async function GET() {
         node_env: process.env.NODE_ENV,
         is_vercel: !!process.env.VERCEL,
         timestamp: new Date().toISOString()
+      },
+      deployment: {
+        vercel_url: process.env.VERCEL_URL || 'Not on Vercel',
+        region: process.env.VERCEL_REGION || 'Unknown',
       }
     });
   } catch (error) {
     console.error('❌ Database connection error:', error);
     
     // Safely get database info even if there's an error
-    let dbInfo;
+    let dbInfo: any = { error: 'Could not parse database URL' };
+    let troubleshooting = [];
+    
     try {
       const dbUrl = process.env.DATABASE_URL;
       if (dbUrl) {
         const parsedUrl = new URL(dbUrl);
+        const hostname = parsedUrl.hostname;
+        const isLocal = isLocalOrPrivateIP(hostname);
+        
         dbInfo = {
-          host: parsedUrl.hostname,
+          host: hostname,
           port: parsedUrl.port,
-          database: parsedUrl.pathname.substring(1)
+          database: parsedUrl.pathname.substring(1),
+          isLocalOrPrivate: isLocal
         };
+        
+        // Add specific troubleshooting based on connection issue
+        if (isLocal) {
+          troubleshooting.push(
+            "You're using localhost or a private IP which won't work on Vercel.",
+            "Update DATABASE_URL in Vercel with a public IP address or hosted database."
+          );
+        }
+        
+        if (error instanceof Error) {
+          if (error.message.includes('ECONNREFUSED')) {
+            troubleshooting.push(
+              "The database server refused the connection. Possible causes:",
+              "- PostgreSQL is not running at the specified host/port",
+              "- Firewall is blocking the connection",
+              "- If using a public IP, port forwarding may not be set up"
+            );
+          } else if (error.message.includes('timeout')) {
+            troubleshooting.push(
+              "Connection timed out. Possible causes:",
+              "- Database server is unreachable",
+              "- Network latency or firewall issues"
+            );
+          } else if (error.message.includes('authentication')) {
+            troubleshooting.push(
+              "Authentication failed. Check your database username and password."
+            );
+          }
+        }
       } else {
-        dbInfo = 'DATABASE_URL is not set';
+        troubleshooting.push("DATABASE_URL environment variable is not set in Vercel");
       }
     } catch (e) {
-      dbInfo = 'Invalid DATABASE_URL format';
+      // Keep default error
     }
     
     return NextResponse.json({
@@ -115,10 +191,15 @@ export async function GET() {
       message: 'Database connection failed',
       error: error instanceof Error ? error.message : 'Unknown error',
       databaseInfo: dbInfo,
+      troubleshooting: troubleshooting.length > 0 ? troubleshooting : undefined,
       environment: {
         node_env: process.env.NODE_ENV,
         is_vercel: !!process.env.VERCEL,
         timestamp: new Date().toISOString()
+      },
+      deployment: {
+        vercel_url: process.env.VERCEL_URL || 'Not on Vercel',
+        region: process.env.VERCEL_REGION || 'Unknown',
       }
     }, { status: 500 });
   }
