@@ -413,7 +413,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="editor-container max-w-4xl mx-auto px-4 py-6">
+    <div className="editor-container max-w-4xl mx-auto px-4 py-6 mt-12">
       <div className="mb-8 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Article Editor</h1>
         <div className="space-x-2">
